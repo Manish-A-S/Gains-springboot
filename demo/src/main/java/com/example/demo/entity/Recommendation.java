@@ -1,5 +1,7 @@
 package com.example.demo.entity;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -64,5 +66,9 @@ public class Recommendation {
 	public String toString() {
 		return "Recommendation [Id=" + Id + ", recommended_movies=" + recommended_movies + ", user=" + user + "]";
 	}
+	
+
+        
+ 
 
 }

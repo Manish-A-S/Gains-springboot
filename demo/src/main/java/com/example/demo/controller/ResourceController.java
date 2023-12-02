@@ -53,7 +53,7 @@ public class ResourceController {
 	@CrossOrigin(origins="http://localhost:3000")
 	@PutMapping("/jpa/edit_reviews")
 	public String editReviews(@RequestBody Reviews reviews) {
-		reviewsRepository.updateMovie(reviews.getMovie_name(), reviews.getReview(), reviews.getSentiment(),reviews.getId());
+		reviewsRepository.updateMovie(reviews.getMovie_name(), reviews.getReview(), reviews.getSentiment(),reviews.getId()		);
 		
 		return "Updated";
 	}
@@ -132,10 +132,14 @@ public class ResourceController {
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id:"+id);
 		}
+		List<Recommendation> movie = recommendationRepository.findByUser(user);
+        recommendationRepository.deleteAll(movie);
+		
 		for(Recommendation i:recommendations) {
 			i.setUser(user.get());
 			Recommendation savedRecommendation=recommendationRepository.save(i);
 		}
+		
 		
 		
 		
