@@ -77,7 +77,7 @@ public class User {
 	public List<String> PositiveReviews(){
 		return reviews.stream()
                 .filter(review -> review.getSentiment() == 1)
-                .map(Reviews::getMovie_name)
+                .map(Reviews::getMovieName)
                 .collect(Collectors.toList());
 	}
 

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.demo.entity.Recommendation;
@@ -53,9 +52,15 @@ public class ResourceController {
 	@CrossOrigin(origins="http://localhost:3000")
 	@PutMapping("/jpa/edit_reviews")
 	public String editReviews(@RequestBody Reviews reviews) {
-		reviewsRepository.updateMovie(reviews.getMovie_name(), reviews.getReview(), reviews.getSentiment(),reviews.getId()		);
+		Optional<Reviews> review = reviewsRepository.findById(reviews.getId());
+		System.out.println(review.get().getMovieName()+" "+reviews.getMovieName());
+		if(review.get().getMovieName().equals(reviews.getMovieName())) {
+			reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());
+			
+			return "Review updated";
+		}
 		
-		return "Updated";
+		return "Review for this movie exists.";
 	}
 	
 	@CrossOrigin(origins="http://localhost:3000")
@@ -70,16 +75,22 @@ public class ResourceController {
 	
 	@CrossOrigin(origins="http://localhost:3000")
 	@PostMapping("/jpa/create-users")
-	public ResponseEntity<User> createUser(@RequestBody User user) {
+	public String createUser(@RequestBody User user) {
 		
-		User savedUser=repository.save(user);
-		URI location= ServletUriComponentsBuilder.fromCurrentRequest().path("/{id").buildAndExpand(savedUser.getId()).toUri();
-		return ResponseEntity.created(location).build();
+		Optional<User> users=repository.findByEmail(user.getEmail());
+		if(users.isPresent()) {
+			
+			return "User already exists";
+		}
+		
+		repository.save(user);
+		return "Account created";
 	}
 
 	@CrossOrigin(origins="http://localhost:3000")
 	@GetMapping("/jpa/users/{id}/reviews")
 	public List<Reviews> retrieveReviewsForUser(@PathVariable int id){
+		
 		Optional<User> user=repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id:"+id);
@@ -101,7 +112,12 @@ public class ResourceController {
 
 	@CrossOrigin(origins="http://localhost:3000")
 	@PostMapping("/jpa/users/{id}/reviews")
-	public ResponseEntity<Object> createReviewsForUser(@PathVariable int id,@RequestBody Reviews reviews){
+	public String createReviewsForUser(@PathVariable int id,@RequestBody Reviews reviews){
+		Optional<Reviews> review = reviewsRepository.findReviewsBymovieName(reviews.getMovieName());
+		if(review.isPresent()) {
+			return "Review for this movie exists.";
+		}
+		
 		Optional<User> user=repository.findById(id);
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id:"+id);
@@ -109,9 +125,9 @@ public class ResourceController {
 		reviews.setUser(user.get());
 		Reviews savedReviews=reviewsRepository.save(reviews);
 		
-		URI location= ServletUriComponentsBuilder.fromCurrentRequest().path("/{id").buildAndExpand(savedReviews.getId()).toUri();
 		
-		return ResponseEntity.created(location).build();
+		
+		return "Review created";
 	}
 
 	@CrossOrigin(origins="http://localhost:3000")

@@ -16,7 +16,9 @@ public interface ReviewsRepository extends JpaRepository<Reviews,Integer>{
 	
 	@Transactional
     @Modifying
-    @Query("UPDATE Reviews e SET e.movie_name = ?1, e.review = ?2 ,e.sentiment = ?3 WHERE e.id = ?4")
-    int updateMovie(String movie_name, String review, int sentiment,int id);
+    @Query("UPDATE Reviews e SET e.movieName = ?1, e.review = ?2 ,e.sentiment = ?3 WHERE e.id = ?4")
+    int updateMovie(String movieName, String review, int sentiment,int id);
+	
+	Optional<Reviews> findReviewsBymovieName(String movie_name);
 	
 }

@@ -18,27 +18,13 @@ public class Reviews {
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private int Id;
-		private String movie_name;
+		private String movieName;
 		private String review;
 		private int sentiment;
 		
 		@ManyToOne(fetch = FetchType.LAZY)
 		@JsonIgnore
 		private User user;
-
-		public Reviews() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-
-		public Reviews(int id, String movie_name, String review, int sentiment, User user) {
-			super();
-			Id = id;
-			this.movie_name = movie_name;
-			this.review = review;
-			this.sentiment = sentiment;
-			this.user = user;
-		}
 
 		public int getId() {
 			return Id;
@@ -48,12 +34,12 @@ public class Reviews {
 			Id = id;
 		}
 
-		public String getMovie_name() {
-			return movie_name;
+		public String getMovieName() {
+			return movieName;
 		}
 
-		public void setMovie_name(String movie_name) {
-			this.movie_name = movie_name;
+		public void setMovieName(String movieName) {
+			this.movieName = movieName;
 		}
 
 		public String getReview() {
@@ -82,7 +68,23 @@ public class Reviews {
 
 		@Override
 		public String toString() {
-			return "Reviews [Id=" + Id + ", movie_name=" + movie_name + ", review=" + review + ", sentiment="
-					+ sentiment + ", user=" + user + "]";
+			return "Reviews [Id=" + Id + ", movieName=" + movieName + ", review=" + review + ", sentiment=" + sentiment
+					+ ", user=" + user + "]";
 		}
+
+		public Reviews() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public Reviews(int id, String movieName, String review, int sentiment, User user) {
+			super();
+			Id = id;
+			this.movieName = movieName;
+			this.review = review;
+			this.sentiment = sentiment;
+			this.user = user;
+		}
+
+		
 }
