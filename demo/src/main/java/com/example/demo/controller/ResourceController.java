@@ -3,9 +3,11 @@ package com.example.demo.controller;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -242,7 +244,9 @@ public class ResourceController {
 	@GetMapping("/jpa/users/movienames")
 	public List<String> retrieveMovieNames(){
 		
-		List<String> movies = reviewsRepository.getAllMovieNames();
+		List<String> movie = reviewsRepository.getAllMovieNames();
+		Set<String> uniqueSet = new HashSet<>(movie);
+	    List<String> movies = new ArrayList<>(uniqueSet);
 		return movies;
 	}
 	
