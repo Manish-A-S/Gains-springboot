@@ -1,5 +1,6 @@
 package com.example.demo.repo;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,6 @@ public interface ReviewsRepository extends JpaRepository<Reviews,Integer>{
 	
 	Optional<Reviews> findReviewsBymovieName(String movie_name);
 	
+	@Query("SELECT movieName FROM Reviews")
+    List<String> getAllMovieNames();
 }

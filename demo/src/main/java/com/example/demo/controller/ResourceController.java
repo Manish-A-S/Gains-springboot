@@ -50,17 +50,34 @@ public class ResourceController {
 
 	
 	@CrossOrigin(origins="http://localhost:3000")
-	@PutMapping("/jpa/edit_reviews")
-	public String editReviews(@RequestBody Reviews reviews) {
-		Optional<Reviews> review = reviewsRepository.findById(reviews.getId());
-		System.out.println(review.get().getMovieName()+" "+reviews.getMovieName());
-		if(review.get().getMovieName().equals(reviews.getMovieName())) {
-			reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());
-			
+	@PutMapping("/jpa/users/{id}/edit_reviews")
+	public String editReviews(@RequestBody Reviews reviews,@PathVariable int id) {
+		Optional<User> user = repository.findById(id);
+		int flag=0;
+		
+		List<Reviews> review = user.get().getReviews();
+		
+		for(Reviews rev:review) {
+			if(rev.getMovieName().equals(reviews.getMovieName()) &&  rev.getId()==reviews.getId()) {
+				flag=1;
+				reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());	
+				return "Review updated";
+			}
+			else if(rev.getMovieName().equals(reviews.getMovieName())  &&  rev.getId()!=reviews.getId()){
+				flag=1;
+				return "Review for this movie exists.";
+				
+			}
+		}
+		if(flag==0) {
+			reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());	
 			return "Review updated";
 		}
 		
-		return "Review for this movie exists.";
+		return " ";
+		
+		
+		
 	}
 	
 	@CrossOrigin(origins="http://localhost:3000")
@@ -113,21 +130,40 @@ public class ResourceController {
 	@CrossOrigin(origins="http://localhost:3000")
 	@PostMapping("/jpa/users/{id}/reviews")
 	public String createReviewsForUser(@PathVariable int id,@RequestBody Reviews reviews){
-		Optional<Reviews> review = reviewsRepository.findReviewsBymovieName(reviews.getMovieName());
-		if(review.isPresent()) {
-			return "Review for this movie exists.";
+//		Optional<Reviews> review = reviewsRepository.findReviewsBymovieName(reviews.getMovieName());
+//		if(review.isPresent()) {
+//			return "Review for this movie exists.";
+//		}
+//		
+//		Optional<User> user=repository.findById(id);
+//		if(user.isEmpty()) {
+//			throw new UserNotFoundException("id:"+id);
+//		}
+//		reviews.setUser(user.get());
+//		Reviews savedReviews=reviewsRepository.save(reviews);
+		
+		//
+		//
+		Optional<User> user = repository.findById(id);
+		int flag=0;
+		
+		List<Reviews> review = user.get().getReviews();
+		
+		for(Reviews rev:review) {
+			if(rev.getMovieName().equals(reviews.getMovieName())) {
+				flag=1;	
+				return "Review for this movie exists.";
+			}
+		}
+		if(flag==0) {
+			reviews.setUser(user.get());
+			reviewsRepository.save(reviews);
+			return "Review created";
 		}
 		
-		Optional<User> user=repository.findById(id);
-		if(user.isEmpty()) {
-			throw new UserNotFoundException("id:"+id);
-		}
-		reviews.setUser(user.get());
-		Reviews savedReviews=reviewsRepository.save(reviews);
+		return " ";
 		
 		
-		
-		return "Review created";
 	}
 
 	@CrossOrigin(origins="http://localhost:3000")
@@ -162,22 +198,22 @@ public class ResourceController {
 		return "Success";
 	}
 	
-	@CrossOrigin(origins="http://localhost:3000")
-	@GetMapping("/jpa/users/{id}/allPositiveMovies")
-	public Map<Integer, List<String>> retrieveMoviesofAllUsers(@PathVariable int id){
-		List<User> users=repository.findAll();
-		Map<Integer,List<String>> movie = new HashMap<>();
-		List<Integer> ids = users.stream()
-                .map(User::getId)
-                .collect(Collectors.toList());
-		for(Integer i:ids) {
-			Optional<User> user=repository.findById(i);
-			List<String> names = user.get().PositiveReviews();
-			if(names.size()>0 && id!=i)
-				movie.put(i, names);
-		}
-		return movie;
-	}
+//	@CrossOrigin(origins="http://localhost:3000")
+//	@GetMapping("/jpa/users/{id}/allPositiveMovies")
+//	public Map<Integer, List<String>> retrieveMoviesofAllUsers(@PathVariable int id){
+//		List<User> users=repository.findAll();
+//		Map<Integer,List<String>> movie = new HashMap<>();
+//		List<Integer> ids = users.stream()
+//                .map(User::getId)
+//                .collect(Collectors.toList());
+//		for(Integer i:ids) {
+//			Optional<User> user=repository.findById(i);
+//			List<String> names = user.get().PositiveReviews();
+//			if(names.size()>0 && id!=i)
+//				movie.put(i, names);
+//		}
+//		return movie;
+//	}
 	
 	@CrossOrigin(origins="http://localhost:3000")
 	@PostMapping("/jpa/login")
@@ -202,7 +238,31 @@ public class ResourceController {
 			
 	}
 	
+	@CrossOrigin(origins="http://localhost:3000")
+	@GetMapping("/jpa/users/movienames")
+	public List<String> retrieveMovieNames(){
+		
+		List<String> movies = reviewsRepository.getAllMovieNames();
+		return movies;
+	}
 	
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@GetMapping("/jpa/users/movies")
+	public Map<Integer, List<Reviews>> retrieveMovies(){
+		List<Integer> ids= repository.getIds();
+		Map<Integer,List<Reviews>> movie =new HashMap<>();
+		
+		for(Integer i:ids) {
+			Optional<User> user=repository.findById(i);
+			List<Reviews> names = user.get().getReviews();
+			if(names.size()>0)
+				movie.put(i, names);
+		}
+		
+		
+		return movie;
+	}
 	
 	
 }
