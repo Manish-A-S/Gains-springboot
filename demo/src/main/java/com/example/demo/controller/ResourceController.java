@@ -186,8 +186,8 @@ public class ResourceController {
 		if(user.isEmpty()) {
 			throw new UserNotFoundException("id:"+id);
 		}
-		List<Recommendation> movie = recommendationRepository.findByUser(user);
-        recommendationRepository.deleteAll(movie);
+//		List<Recommendation> movie = recommendationRepository.findByUser(user);
+//        recommendationRepository.deleteAll(movie);
 		
 		for(Recommendation i:recommendations) {
 			i.setUser(user.get());

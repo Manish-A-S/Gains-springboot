@@ -25,6 +25,8 @@ public class Reviews {
 		@ManyToOne(fetch = FetchType.LAZY)
 		@JsonIgnore
 		private User user;
+		
+		
 
 		public int getId() {
 			return Id;
