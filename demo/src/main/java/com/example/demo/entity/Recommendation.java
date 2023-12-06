@@ -21,22 +21,26 @@ public class Recommendation {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int Id;
 	private String recommended_movies;
+	private String rating;
+	private String genre;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonIgnore
-	private User user;
-
 	public Recommendation() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public Recommendation(int id, String recommended_movies, User user) {
+	public Recommendation(int id, String recommended_movies, String rating, String genre, Reviews review) {
 		super();
 		Id = id;
 		this.recommended_movies = recommended_movies;
-		this.user = user;
+		this.rating = rating;
+		this.genre = genre;
+		this.review = review;
 	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Reviews review;
 
 	public int getId() {
 		return Id;
@@ -54,21 +58,37 @@ public class Recommendation {
 		this.recommended_movies = recommended_movies;
 	}
 
-	public User getUser() {
-		return user;
+	public String getRating() {
+		return rating;
 	}
 
-	public void setUser(User user) {
-		this.user = user;
+	public void setRating(String rating) {
+		this.rating = rating;
+	}
+
+	public String getGenre() {
+		return genre;
+	}
+
+	public void setGenre(String genre) {
+		this.genre = genre;
+	}
+
+	public Reviews getReview() {
+		return review;
+	}
+
+	public void setReview(Reviews review) {
+		this.review = review;
 	}
 
 	@Override
 	public String toString() {
-		return "Recommendation [Id=" + Id + ", recommended_movies=" + recommended_movies + ", user=" + user + "]";
+		return "Recommendation [Id=" + Id + ", recommended_movies=" + recommended_movies + ", rating=" + rating
+				+ ", genre=" + genre + ", review=" + review + "]";
 	}
-	
 
-        
+	
  
 
 }

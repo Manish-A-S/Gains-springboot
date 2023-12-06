@@ -28,9 +28,6 @@ public class User {
 	@JsonIgnore
 	private List<Reviews> reviews;
 	
-	@OneToMany(mappedBy="user")
-	@JsonIgnore
-	private List<Recommendation> recommendations;
 
 	public User(int id, String email, String password, List<Reviews> reviews, List<Recommendation> recommendations) {
 		super();
@@ -38,7 +35,7 @@ public class User {
 		this.email = email;
 		this.password = password;
 		this.reviews = reviews;
-		this.recommendations = recommendations;
+
 	}
 
 	public User() {
@@ -88,22 +85,11 @@ public class User {
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", password=" + password + ", reviews=" + reviews
-				+ ", recommendations=" + recommendations + "]";
+				+ "]";
 	}
 
-	public List<Recommendation> getRecommendations() {
-		return recommendations;
-	}
 	
-	public List<String> recommendation(){
-		return recommendations.stream()
-                .map(Recommendation::getRecommended_movies)
-                .collect(Collectors.toList());
-	}
-
-	public void setRecommendations(List<Recommendation> recommendations) {
-		this.recommendations = recommendations;
-	}
+	
 	
 //	public void updateMovie(int id,Reviews review) {
 //		for(Reviews r:reviews) {

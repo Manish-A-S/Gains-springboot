@@ -11,6 +11,6 @@ import com.example.demo.entity.User;
 
 
 public interface RecommendationRepository extends JpaRepository<Recommendation,Integer>{
-	 List<Recommendation> findByUser(Optional<User> user);
-	 void deleteByUser(User user);
+	
+	
 }
