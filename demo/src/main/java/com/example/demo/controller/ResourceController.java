@@ -177,7 +177,7 @@ public class ResourceController {
 		for(Reviews rev:review) {
 			if(rev.getMovieName().equals(reviews.getMovieName()) &&  rev.getId()==reviews.getId()) {
 				flag=1;
-				reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());	
+				reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getGenre(),reviews.getRating(),reviews.getId());	
 				return "Review updated";
 			}
 			else if(rev.getMovieName().equals(reviews.getMovieName())  &&  rev.getId()!=reviews.getId()){
@@ -187,7 +187,7 @@ public class ResourceController {
 			}
 		}
 		if(flag==0) {
-			reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getId());	
+			reviewsRepository.updateMovie(reviews.getMovieName(), reviews.getReview(), reviews.getSentiment(),reviews.getGenre(),reviews.getRating(),reviews.getId());	
 			return "Review updated";
 		}
 		
@@ -221,7 +221,9 @@ public class ResourceController {
 	public String createRecommendation(@PathVariable int id,@RequestBody List<Recommendation> recommendations){
 		Optional<Reviews> review=reviewsRepository.findById(id);
 		
-
+		List<Recommendation> recomm = review.get().getRecommendations();
+		recomm.clear();
+		review.get().setRecommendations(recomm);
 		
 		for(Recommendation i:recommendations) {
 			i.setReview(review.get());
