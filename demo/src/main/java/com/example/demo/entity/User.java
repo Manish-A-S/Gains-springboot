@@ -1,12 +1,10 @@
 package com.example.demo.entity;
 
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,33 +13,24 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name="user_details")
+@Table(name="User")
 public class User {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	private String email;
-	private String password;
+	private String firstName;
+	private String lastName;
+	private long phoneNumber;
+	private Date dob;
+	
+	private String grade;
+	private String institute;
 	
 	@OneToMany(mappedBy="user")
 	@JsonIgnore
-	private List<Reviews> reviews;
-	
-
-	public User(int id, String email, String password, List<Reviews> reviews, List<Recommendation> recommendations) {
-		super();
-		this.id = id;
-		this.email = email;
-		this.password = password;
-		this.reviews = reviews;
-
-	}
-
-	public User() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+	private List<Topic> topic;
 
 	public int getId() {
 		return id;
@@ -59,49 +48,89 @@ public class User {
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return password;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
 
-	public List<Reviews> getReviews() {
-		return reviews;
-	}
-	
-	public List<String> PositiveReviews(){
-		return reviews.stream()
-                .filter(review -> review.getSentiment() == 1)
-                .map(Reviews::getMovieName)
-                .collect(Collectors.toList());
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setReviews(List<Reviews> reviews) {
-		this.reviews = reviews;
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public long getPhoneNumber() {
+		return phoneNumber;
+	}
+
+	public void setPhoneNumber(long phoneNumber) {
+		this.phoneNumber = phoneNumber;
+	}
+
+	public Date getDob() {
+		return dob;
+	}
+
+	public void setDob(Date dob) {
+		this.dob = dob;
+	}
+
+	public String getGrade() {
+		return grade;
+	}
+
+	public void setGrade(String grade) {
+		this.grade = grade;
+	}
+
+	public String getInstitute() {
+		return institute;
+	}
+
+	public void setInstitute(String institute) {
+		this.institute = institute;
+	}
+
+	public List<Topic> getTopic() {
+		return topic;
+	}
+
+	public void setTopic(List<Topic> topic) {
+		this.topic = topic;
+	}
+
+	public User() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public User(int id, String email, String firstName, String lastName, long phoneNumber, Date dob, String grade,
+			String institute, List<Topic> topic) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.phoneNumber = phoneNumber;
+		this.dob = dob;
+		this.grade = grade;
+		this.institute = institute;
+		this.topic = topic;
 	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", email=" + email + ", password=" + password + ", reviews=" + reviews
-				+ "]";
+		return "User [id=" + id + ", email=" + email + ", firstName=" + firstName + ", lastName=" + lastName
+				+ ", phoneNumber=" + phoneNumber + ", dob=" + dob + ", grade=" + grade + ", institute=" + institute
+				+ ", topic=" + topic + "]";
 	}
-
 	
 	
 	
-//	public void updateMovie(int id,Reviews review) {
-//		for(Reviews r:reviews) {
-//			if(r.getId()==id) {
-//				System.out.println(review.getMovie_name());
-//				r.setMovie_name(review.getMovie_name());
-//				r.setReview(review.getReview());
-//				r.setSentiment(review.getSentiment());
-//			}
-//		}
-//		
-//		
-//	}
 
 }
