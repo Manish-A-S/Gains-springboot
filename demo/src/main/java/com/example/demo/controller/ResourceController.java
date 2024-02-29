@@ -314,5 +314,16 @@ public class ResourceController {
 		return quiz.get().getQuestions();
 	}
 	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/delete-topics")
+	public String deleteTopics(@RequestBody List<Integer> ids) {
+		
+		for(int id:ids) {
+			topicRepository.deleteById(id);
+		}
+
+		return "Successfully deleted";
+	}
+	
 	
 }

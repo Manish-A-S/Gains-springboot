@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -48,19 +48,19 @@ public class Topic {
 		@JsonIgnore
 		private User user;
 		
-		@OneToMany(mappedBy="topics")
+		@OneToMany(mappedBy="topics",cascade=CascadeType.ALL, orphanRemoval= true)
 		@JsonIgnore
 		private List<Doubts> doubts;
 		
-		@OneToMany(mappedBy="topics")
+		@OneToMany(mappedBy="topics",cascade=CascadeType.ALL, orphanRemoval= true)
 		@JsonIgnore
 		private List<Notes> notes;
 		
-		@OneToMany(mappedBy="topics")
+		@OneToMany(mappedBy="topics",cascade=CascadeType.ALL, orphanRemoval= true)
 		@JsonIgnore
 		private List<Quiz> quiz;
 		
-		@OneToMany(mappedBy="topics")
+		@OneToMany(mappedBy="topics",cascade=CascadeType.ALL, orphanRemoval= true)
 		@JsonIgnore
 		private List<Tutor> tutor;
 
