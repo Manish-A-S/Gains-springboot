@@ -20,10 +20,8 @@ public class Doubts {
 		@Id
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private int id;
-		private String topic;
-		private String content;
-		private String question;
-		private String answer;
+		private String text;
+		private String sender;
 		private Timestamp timestamp;
 		
 		@ManyToOne(fetch = FetchType.LAZY)
@@ -38,36 +36,35 @@ public class Doubts {
 			this.id = id;
 		}
 
-		public String getTopic() {
-			return topic;
+		public Doubts(int id, String text, String sender, Timestamp timestamp, Topic topics) {
+			super();
+			this.id = id;
+			this.text = text;
+			this.sender = sender;
+			this.timestamp = timestamp;
+			this.topics = topics;
 		}
 
-		public void setTopic(String topic) {
-			this.topic = topic;
+		@Override
+		public String toString() {
+			return "Doubts [id=" + id + ", text=" + text + ", sender=" + sender + ", timestamp=" + timestamp + ", topics="
+					+ topics + "]";
 		}
 
-		public String getContent() {
-			return content;
+		public String getText() {
+			return text;
 		}
 
-		public void setContent(String content) {
-			this.content = content;
+		public void setText(String text) {
+			this.text = text;
 		}
 
-		public String getQuestion() {
-			return question;
+		public String getSender() {
+			return sender;
 		}
 
-		public void setQuestion(String question) {
-			this.question = question;
-		}
-
-		public String getAnswer() {
-			return answer;
-		}
-
-		public void setAnswer(String answer) {
-			this.answer = answer;
+		public void setSender(String sender) {
+			this.sender = sender;
 		}
 
 		public Timestamp getTimestamp() {
@@ -83,24 +80,6 @@ public class Doubts {
 		}
 
 		public void setTopics(Topic topics) {
-			this.topics = topics;
-		}
-
-		@Override
-		public String toString() {
-			return "Doubts [id=" + id + ", topic=" + topic + ", content=" + content + ", question=" + question
-					+ ", answer=" + answer + ", timestamp=" + timestamp + ", topics=" + topics + "]";
-		}
-
-		public Doubts(int id, String topic, String content, String question, String answer, Timestamp timestamp,
-				Topic topics) {
-			super();
-			this.id = id;
-			this.topic = topic;
-			this.content = content;
-			this.question = question;
-			this.answer = answer;
-			this.timestamp = timestamp;
 			this.topics = topics;
 		}
 

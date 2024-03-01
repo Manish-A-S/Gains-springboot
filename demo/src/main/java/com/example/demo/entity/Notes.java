@@ -24,9 +24,6 @@ public class Notes {
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private int id;
 		private String topic;
-		@Lob
-		@Column(columnDefinition = "LONGTEXT")
-		private String content;
 		private List<String> summary;
 		private Timestamp timestamp;
 		
@@ -54,17 +51,6 @@ public class Notes {
 		public void setTopic(String topic) {
 			this.topic = topic;
 		}
-
-
-		public String getContent() {
-			return content;
-		}
-
-
-		public void setContent(String content) {
-			this.content = content;
-		}
-
 
 		public List<String> getSummary() {
 			return summary;
@@ -98,7 +84,7 @@ public class Notes {
 
 		@Override
 		public String toString() {
-			return "Notes [id=" + id + ", topic=" + topic + ", content=" + content + ", summary=" + summary
+			return "Notes [id=" + id + ", topic=" + topic + ", summary=" + summary
 					+ ", timestamp=" + timestamp + ", topics=" + topics + "]";
 		}
 
@@ -107,7 +93,6 @@ public class Notes {
 			super();
 			this.id = id;
 			this.topic = topic;
-			this.content = content;
 			this.summary = summary;
 			this.timestamp = timestamp;
 			this.topics = topics;

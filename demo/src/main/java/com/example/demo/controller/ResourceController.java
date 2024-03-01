@@ -2,15 +2,20 @@ package com.example.demo.controller;
 
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import java.util.List;
 
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.boot.autoconfigure.mail.MailProperties;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.entity.Doubts;
 import com.example.demo.entity.Notes;
+import com.example.demo.entity.Otp;
 import com.example.demo.entity.Questions;
 import com.example.demo.entity.Quiz;
 import com.example.demo.entity.Topic;
@@ -30,13 +36,17 @@ import com.example.demo.entity.Tutor;
 import com.example.demo.entity.User;
 import com.example.demo.repo.DoubtsRepository;
 import com.example.demo.repo.NotesRepository;
+import com.example.demo.repo.OtpRepository;
 import com.example.demo.repo.QuestionsRepository;
 import com.example.demo.repo.QuizRepository;
 import com.example.demo.repo.TopicRepository;
 import com.example.demo.repo.TutorRepository;
 import com.example.demo.repo.UserRepository;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 
+import java.util.random.*;
 
 
 @RestController
@@ -63,15 +73,26 @@ public class ResourceController {
 	@Autowired
 	QuestionsRepository questionRepository;
 	
+	@Autowired
+	OtpRepository otpRepository;
 	
 	
+	@Autowired
+	private JavaMailSender mailSender;
+	
+	@Autowired
+	private MailProperties mailProperties;
 
 	
 	
 	
+	
+
+
 	public ResourceController(UserRepository repository, TopicRepository topicRepository,
 			DoubtsRepository doubtRepository, NotesRepository noteRepository, QuizRepository quizRepository,
-			TutorRepository tutorRepository, QuestionsRepository questionRepository) {
+			TutorRepository tutorRepository, QuestionsRepository questionRepository, OtpRepository otpRepository,
+			JavaMailSender mailSender, MailProperties mailProperties) {
 		super();
 		this.repository = repository;
 		this.topicRepository = topicRepository;
@@ -80,6 +101,9 @@ public class ResourceController {
 		this.quizRepository = quizRepository;
 		this.tutorRepository = tutorRepository;
 		this.questionRepository = questionRepository;
+		this.otpRepository = otpRepository;
+		this.mailSender = mailSender;
+		this.mailProperties = mailProperties;
 	}
 
 
@@ -323,6 +347,114 @@ public class ResourceController {
 		}
 
 		return "Successfully deleted";
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PutMapping("/jpa/{id}/edit-content")
+	public String editContent(@RequestBody String content, @PathVariable int id) {
+		
+		Optional<Topic> topic= topicRepository.findById(id);
+		topic.get().setContent(content);
+
+		return "Content updated";
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PutMapping("/jpa/{id}/edit-notes")
+	public String editNotes(@RequestBody List<String> content, @PathVariable int id) {
+		
+		Optional<Notes> notes= noteRepository.findById(id);
+		notes.get().setSummary(content);
+
+		return "Content updated";
+	}
+	
+	
+	public int generate_otp(String email) {
+		Random random = new Random();
+		int min = 100000; 
+        int max = 999999; 
+        int randomNumber = random.nextInt(max - min + 1) + min;
+        return randomNumber;
+           
+	}
+	
+	public void sendMail(Otp otp) throws MessagingException {
+		MimeMessage mimeMessage = mailSender.createMimeMessage();
+		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true);
+		
+		helper.setSubject("Forgot Password");
+		helper.setText("OTP to reset the password \n\n  " + otp.getOtp()+" \n\n Your OTP will expire in 60 seconds");
+		helper.setFrom(mailProperties.getUsername());
+		helper.setTo(otp.getEmail());
+		mailSender.send(mimeMessage);
+		
+;	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/{id}/forgot-password")
+	public int forgot_password(@RequestBody Otp otps) throws MessagingException {
+		
+		int otp=generate_otp(otps.getEmail());
+		otps.setOtp(otp);
+		otps.setTime(LocalDateTime.now().plusMinutes(1));
+		otpRepository.save(otps);
+		sendMail(otps);
+		return otps.getId();
+
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/{id}/verify-otp")
+	public boolean verify_otp(@RequestBody int otp,@PathVariable int id) {
+		
+		Optional<Otp> otps=otpRepository.findById(id);
+		if(otps.isPresent()) {
+			
+			if(otps.get().getTime().isAfter(LocalDateTime.now()) ) {
+				
+				if(otps.get().getOtp()==otp) {
+					return true;
+				}
+				else {
+					return false;
+				}
+			}
+			else {
+				otpRepository.deleteById(id);
+			}
+			
+		}
+		
+		return false;
+
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/reset-password")
+	public String reset_password(@RequestBody User user) {
+		
+		Optional<User> users=repository.findByEmail(user.getEmail());
+		users.get().setPassword(user.getPassword());
+		repository.save(users.get());
+		return "Success";
+
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/{id}/change-password")
+	public String change_password(@RequestBody List<String> password, @PathVariable int id) {
+		
+		Optional<User> users=repository.findById(id);
+		if(users.get().getPassword().equals(password.get(0))) {
+			users.get().setPassword(password.get(1));
+		}
+		else {
+			return "Wrong";
+		}
+		
+		return "Success";
+
 	}
 	
 	

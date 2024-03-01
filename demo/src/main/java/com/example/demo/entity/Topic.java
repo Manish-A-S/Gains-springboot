@@ -7,12 +7,14 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Table;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 
@@ -24,6 +26,9 @@ public class Topic {
 		@GeneratedValue(strategy = GenerationType.IDENTITY)
 		private int id;
 		private String topic;
+		@Lob
+		@Column(columnDefinition = "LONGTEXT")
+		private String content;
 		private List<Boolean> action;
 		public List<Boolean> getAction() {
 			return action;
@@ -120,24 +125,12 @@ public class Topic {
 			this.tutor = tutor;
 		}
 
-
-
-		
-
-		
-
-		@Override
-		public String toString() {
-			return "Topic [id=" + id + ", topic=" + topic + ", action=" + action + ", timestamp=" + timestamp
-					+ ", user=" + user + ", doubts=" + doubts + ", notes=" + notes + ", quiz=" + quiz + ", tutor="
-					+ tutor + "]";
-		}
-
-		public Topic(int id, String topic, List<Boolean> action, Timestamp timestamp, User user, List<Doubts> doubts,
-				List<Notes> notes, List<Quiz> quiz, List<Tutor> tutor) {
+		public Topic(int id, String topic, String content, List<Boolean> action, Timestamp timestamp, User user,
+				List<Doubts> doubts, List<Notes> notes, List<Quiz> quiz, List<Tutor> tutor) {
 			super();
 			this.id = id;
 			this.topic = topic;
+			this.content = content;
 			this.action = action;
 			this.timestamp = timestamp;
 			this.user = user;
@@ -145,6 +138,21 @@ public class Topic {
 			this.notes = notes;
 			this.quiz = quiz;
 			this.tutor = tutor;
+		}
+
+		@Override
+		public String toString() {
+			return "Topic [id=" + id + ", topic=" + topic + ", content=" + content + ", action=" + action
+					+ ", timestamp=" + timestamp + ", user=" + user + ", doubts=" + doubts + ", notes=" + notes
+					+ ", quiz=" + quiz + ", tutor=" + tutor + "]";
+		}
+
+		public String getContent() {
+			return content;
+		}
+
+		public void setContent(String content) {
+			this.content = content;
 		}
 
 		public Topic() {

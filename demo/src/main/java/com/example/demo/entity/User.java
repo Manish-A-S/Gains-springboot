@@ -117,9 +117,7 @@ public class User {
 	public void setTopic(List<Topic> topic) {
 		this.topic = topic;
 	}
-
 	
-
 	public User(int id, String email, String password, String firstName, String lastName, long phone, String dob,
 			String institute, String grade, List<Topic> topic) {
 		super();
@@ -132,6 +130,7 @@ public class User {
 		this.dob = dob;
 		this.institute = institute;
 		this.grade = grade;
+	
 		this.topic = topic;
 	}
 
@@ -139,13 +138,14 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", email=" + email + ", password=" + password + ", firstName=" + firstName
 				+ ", lastName=" + lastName + ", phone=" + phone + ", dob=" + dob + ", institute=" + institute
-				+ ", grade=" + grade + ", topic=" + topic + "]";
+				+ ", grade=" + grade  + ", topic=" + topic + "]";
 	}
 
 	public User() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
 	
 
 	
