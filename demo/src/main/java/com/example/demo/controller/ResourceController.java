@@ -311,11 +311,11 @@ public class ResourceController {
 	
 	@CrossOrigin(origins="http://localhost:3000")
 	@GetMapping("/jpa/{id}/get-notes")
-	public List<Notes> getNotes(@PathVariable int id) {
+	public String getNotes(@PathVariable int id) {
 		
 		Optional<Topic> topic =topicRepository.findById(id);
-
-		return topic.get().getNotes();
+		Notes notes=topic.get().getNotes().get(0);
+		return notes.getSummary();
 	}
 	
 	
@@ -361,7 +361,7 @@ public class ResourceController {
 	
 	@CrossOrigin(origins="http://localhost:3000")
 	@PutMapping("/jpa/{id}/edit-notes")
-	public String editNotes(@RequestBody List<String> content, @PathVariable int id) {
+	public String editNotes(@RequestBody String content, @PathVariable int id) {
 		
 		Optional<Notes> notes= noteRepository.findById(id);
 		notes.get().setSummary(content);
@@ -379,12 +379,12 @@ public class ResourceController {
            
 	}
 	
-	public void sendMail(Otp otp) throws MessagingException {
+	public void sendMail(Otp otp,String subject,String body) throws MessagingException {
 		MimeMessage mimeMessage = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage,true);
 		
-		helper.setSubject("Forgot Password");
-		helper.setText("OTP to reset the password \n\n  " + otp.getOtp()+" \n\n Your OTP will expire in 60 seconds");
+		helper.setSubject(subject);
+		helper.setText(body+ otp.getOtp()+" \n\n Your OTP will expire in 60 seconds");
 		helper.setFrom(mailProperties.getUsername());
 		helper.setTo(otp.getEmail());
 		mailSender.send(mimeMessage);
@@ -392,28 +392,36 @@ public class ResourceController {
 ;	}
 	
 	@CrossOrigin(origins="http://localhost:3000")
-	@PostMapping("/jpa/{id}/forgot-password")
+	@PostMapping("/jpa/forgot-password")
 	public int forgot_password(@RequestBody Otp otps) throws MessagingException {
+		
+		Optional<User> user =repository.findByEmail(otps.getEmail());
+		
+		if(user.isEmpty()) {
+			return -1;
+		}
 		
 		int otp=generate_otp(otps.getEmail());
 		otps.setOtp(otp);
 		otps.setTime(LocalDateTime.now().plusMinutes(1));
 		otpRepository.save(otps);
-		sendMail(otps);
+		sendMail(otps,"Forgot Password","OTP to reset the password \n\n  ");
 		return otps.getId();
 
 	}
 	
 	@CrossOrigin(origins="http://localhost:3000")
 	@PostMapping("/jpa/{id}/verify-otp")
-	public boolean verify_otp(@RequestBody int otp,@PathVariable int id) {
+	public boolean verify_otp(@RequestBody Otp otp,@PathVariable int id) {
 		
 		Optional<Otp> otps=otpRepository.findById(id);
+		System.out.println(otps.get().getOtp());
+		System.out.println(otp);
 		if(otps.isPresent()) {
 			
 			if(otps.get().getTime().isAfter(LocalDateTime.now()) ) {
 				
-				if(otps.get().getOtp()==otp) {
+				if(otps.get().getOtp()==otp.getOtp()) {
 					return true;
 				}
 				else {
@@ -454,6 +462,19 @@ public class ResourceController {
 		}
 		
 		return "Success";
+
+	}
+	
+	@CrossOrigin(origins="http://localhost:3000")
+	@PostMapping("/jpa/verify-email")
+	public int verify_email(@RequestBody Otp otps) throws MessagingException {
+		
+		int otp=generate_otp(otps.getEmail());
+		otps.setOtp(otp);
+		otps.setTime(LocalDateTime.now().plusMinutes(1));
+		otpRepository.save(otps);
+		sendMail(otps,"Email verification","OTP to verify your email \n\n");
+		return otps.getId();
 
 	}
 	
